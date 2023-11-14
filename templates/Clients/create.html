@@ -1,0 +1,64 @@
+<style>
+  /* Agrega estilos personalizados para el modal-body */
+  .modal-body {
+    max-height: 500px; /* Ajusta la altura máxima según tus necesidades */
+    overflow-y: auto; /* Agrega desplazamiento vertical si es necesario */
+  }
+</style>
+
+<div class="container">
+  <div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Formulario</h5>
+          <!-- x delete -->
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form method="post" action="{% url 'client:client_create' %}">
+          {% csrf_token %}
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="name" class="col-form-label">Name</label>
+              {{form.name}}
+            </div>
+            <!-- Agrega más campos del formulario aquí -->
+            <div class="mb-3">
+              <label for="surnames" class="col-form-label">Last Name</label>
+              {{form.surnames}}
+            </div>
+            <div class="mb-3">
+              <label for="dni" class="col-form-label">DNI</label>
+              <!-- <input type="text" class="form-control" id="dni" name="dni" placeholder="Enter your DNI"> -->
+              {{form.dni}}
+            </div>
+            <div class="mb-3">
+              <label for="fecha_nacimiento" class="col-form-label">Date of birth</label>
+              <!-- <input type="date" class="form-control" id="date_brirthday" name="date_birthday" placeholder="Enter your date of birth"> -->
+              {{form.date_birthday}}
+            </div>
+            <div class="mb-3">
+              <label for="address" class="col-form-label">Address</label>
+              <!-- <input type="text" class="form-control" id="direccion" name="address" placeholder="Enter your address"> -->
+              {{form.address}}
+            </div>
+            <div class="mb-3">
+              <label for="sexo" class="col-form-label">Gender</label>
+              <!-- <select class="form-control" id="sexo" name="sexo">
+                <option value="masculino">Male</option>
+                <option value="femenino">Female</option>
+              </select> -->
+              {{form.gender}}
+            </div>
+          </div>
+          <div class="modal-footer">
+            <a href="{% url 'client:client_list' %}" class="btn btn-secondary" data-dismiss="modal">Cancel</a>
+            <button type="submit" id="btn_enviar" class="btn btn-primary">Send</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

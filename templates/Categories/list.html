@@ -1,0 +1,68 @@
+{% extends 'list.html' %}
+
+{% block div %}
+<div class="col-sm-6">
+    <ol class="breadcrumb float-sm-right">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'categories:listaCategories' %}">Categories</a></li>
+    </ol>
+</div>
+{% endblock %}
+
+
+{% block columns %}
+    <tr>
+        <th scope="col" style="width: 10%;">Nro</th>
+        <th scope="col" style="width: 40%;">Name</th>
+        <th scope="col" style="width: 30%;">Description</th>
+        <th scope="col" style="width: 20%;">Options</th>
+    </tr>
+{% endblock %}
+
+{% block rows %}
+    {% for c in cat %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ c.name }}</td>
+            <td>{{ c.desc|default_if_none:"" }}</td>
+            <td>
+                <a href="{% url 'categories:category_update' c.id %}" class="btn btn-warning btn-xs btn-flat">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{% url 'categories:category_delete' c.id %}" class="btn btn-danger btn-xs btn-flat" >
+                    <i class="fas fa-trash-alt"></i>
+                </a>
+            </td>
+        </tr>
+    {% endfor %}
+
+{% endblock %}
+
+
+
+{% block javascript %}
+    
+    <script type="application/javascript">
+            document.addEventListener("DOMContentLoaded", function() {
+            let table = document.getElementById("data");
+            let dataTable = new DataTable(table);
+
+            let button = document.getElementById("btn-registro");
+            button.addEventListener("click", () => {
+            // Realizar solicitud AJAX usando fetch
+            
+            fetch('/lista/?filter_id=16')  // Reemplaza el valor '1' con el ID que desees filtrar
+            // .then(response => response.json())
+            .then(response => {          
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.log("Error: ", error);
+            });
+        });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'body.html' %}
+{% load widget_tweaks %}
+
+{% block div %}
+<div class="col-sm-6">
+    <ol class="breadcrumb float-sm-right">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'categories:product_list' %}">Products</a></li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+  
+<form action="" method="post" enctype="multipart/form-data" id="form">
+    {% csrf_token %}
+    <div class="card card-default">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-plus"></i>
+                {{title}}
+            </h3>
+        </div>
+
+        <div class="card-body">
+
+            <div class="form-group">
+                <label for="name">{{form.name.label}}:</label>
+                {{form.name}}
+            </div>
+            <div class="form-group">
+                <label for="cate">{{form.category.label}}:</label>
+                {{form.category}}
+            </div>
+            <div class="form-group">
+                <label for="img">{{form.image.label}}:</label>
+                {{form.image}}
+            </div>
+            <div class="form-group">
+                <label for="price">{{form.price.label}}:</label>
+                {{form.price}}
+            </div>
+        </div>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-primary btn-flat" id="btn-registro">
+                <i class="fas fa-save"></i> Save
+            </button>
+            <a href="{% url 'categories:product_list' %}" class="btn btn-danger btn-flat">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+        </div>           
+    </div>
+</form>
+{% endblock %}
+{% block javascript %}
+    <script>
+        const form = document.getElementById('form');
+        const originalFormData = new FormData(form);     
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+
+          const formData = new FormData(form);
+        
+          // Convertir los iterables en arrays
+          //Convert the FormData to an array
+          const originalDataArray = Array.from(originalFormData.values());
+          const currentDataArray = Array.from(formData.values());
+    
+          // Comparamos los arrays
+          if (JSON.stringify(originalDataArray) !== JSON.stringify(currentDataArray)) {
+            // if the data is different, then the user have modified an input
+            alert('Has modificado algún dato del formulario');
+            form.submit();
+
+          } else {
+            // Si los datos son iguales, entonces el usuario no ha modificado ningún input
+            alert('No has actualizado ningún dato');
+          }
+        });
+      </script>
+      
+{% endblock %}

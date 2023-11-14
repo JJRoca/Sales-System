@@ -1,0 +1,107 @@
+{% extends 'body.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'lib/DataTables/datatables.css' %}" />
+<script src="{% static 'lib/DataTables/datatables.js' %}"></script>
+
+{% endblock %}
+
+{% block div %}
+<div class="col-sm-6">
+    <ol class="breadcrumb float-sm-right">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item"><a href="Clients">Clients</a></li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+    /* Agrega estilos personalizados para el modal-body */
+    .modal-body {
+    max-height: 500px; /* Ajusta la altura máxima según tus necesidades */
+    overflow-y: auto; /* Agrega desplazamiento vertical si es necesario */
+  }
+</style>
+    <div class="card card-default">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-search"></i>
+                {{ prueba }}
+            </h3>
+        </div>
+        <div class="card-body">
+            <table class="table" id="data">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 10%;">Nro</th>
+                        <th scope="col" style="width: 15%;">Nombres</th>
+                        <th scope="col" style="width: 15%;">Apellidos</th>
+                        <th scope="col" style="width: 10%;">Dni</th>
+                        <th scope="col" style="width: 15%;">Fecha de nacimiento</th>
+                        <th scope="col" style="width: 15%;">Sexo</th>
+                        <th scope="col" style="width: 20%;">Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in cli %} 
+                        <tr>
+                            <td>{{forloop.counter}}</td>
+                            <td>{{c.name}}</td>
+                            <td>{{c.surnames}}</td>
+                            <td>{{c.dni}}</td>
+                            <td>{{c.date_brirthday}}</td>
+                            <td>{{c.gender}}</td>
+                            <td>
+                                <a href="" class="btn btn-warning btn-xs btn-flat">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'client:client_delete' c.id %}" class="btn btn-danger btn-xs btn-flat">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+            <!-- <button type="button" class="btn btn-primary btn-flat" onclick="abrirModal()">Abrir modal</button> -->
+            <div class="card-footer">
+                <button type="button" class="btn btn-primary btn-flat" onclick="abrirModal()">
+                    <i class="fas fa-plus"></i>New Register </button>    
+            </div>
+            
+            <div id="modalContainer">
+            </div>
+        </div>        
+{% endblock %}
+
+
+{% block javascript %}
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script>
+function abrirModal() {
+    const modalContainer = document.getElementById("modalContainer");
+
+    // Realizar una solicitud fetch para cargar el contenido del modal
+    fetch("/clients/create/")
+        .then(response => response.text())
+        .then(data => {
+            modalContainer.innerHTML = data;
+
+            // Mostrar el modal de Bootstrap utilizando JavaScript nativo
+            const modal = document.getElementById("myModal");
+            modal.classList.add("show");
+            modal.style.display = "block";
+        })
+        .catch(error => {
+            console.error(error);
+        });
+}
+
+</script>
+
+{% endblock %}

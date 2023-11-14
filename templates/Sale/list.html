@@ -1,0 +1,208 @@
+{% extends 'body.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'lib/DataTables/datatables.css' %}" />
+<script src="{% static 'lib/DataTables/datatables.js' %}"></script>
+{% endblock %}
+
+{% block div %}
+<div class="col-sm-6">
+    <ol class="breadcrumb float-sm-right">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'categories:product_list' %}">Products</a></li>
+    </ol>
+</div>
+{% endblock %}
+
+
+{% block content %}
+<style>
+  /* style for tables with id="tblDet" y "data" */
+  #tblDet_wrapper, #data_wrapper {
+      font-family: Arial, sans-serif;
+      border: 1px solid #ddd;
+      border-collapse: collapse;
+      width: 100%;
+  }
+
+  #tblDet, #data {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid #ddd;
+  }
+
+  #tblDet th, #data th {
+      background-color: #f2f2f2;
+  }
+
+  #tblDet td, #data td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+  }
+
+  /* Estilos para la tabla dentro del modal */
+  #tblDet_wrapper {
+      margin: 10px;
+  }
+  /* Ajustar los estilos según tus preferencias */
+</style>
+
+    <div class="card card-default">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-search"></i>
+                {{ title }}
+            </h3>
+        </div>
+        <div class="card-body">
+            <table class="table" id="data">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 10%;">Nro</th>
+                        <th scope="col" style="width: 20%;">Client</th>
+                        <th scope="col" style="width: 20%;">Registration Date</th>
+                        <th scope="col" style="width: 10%;">Subtotal</th>
+                        <th scope="col" style="width: 15;">Iva</th>
+                        <th scope="col" style="width: 15;">Total</th>
+                        <th scope="col" style="width: 10;">Options</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sa in sale %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ sa.cli.name }}</td>
+                        <td>{{ sa.date_joined }}</td>
+                        <td>{{sa.subtotal}}</td>
+                        <td>{{sa.iva}}</td>
+                        <td>{{sa.total}}</td>
+                        <td>
+                            <a href="" class="btn btn-warning btn-xs btn-flat">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                            <button type="submit" class="btn btn-danger btn-xs btn-flat openModal" data-id="{{sa.id}}">
+                                <i class="fas fa-search"></i>
+                            </button>
+							              <a href="{% url 'sale:pdf' sa.id %}"  target="_blank" type="submit" class="btn btn-success  btn-xs btn-flat" data-id="{{sa.id}}">
+                                <i class="fas fa-file-pdf fa-print"></i>                    
+                            </a>
+
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer">
+            <a class="btn btn-primary btn-flat" id="btn-registro" href="#">
+                <i class="fas fa-plus"></i>New Register </a>    
+        </div>
+    </div>
+    <!-- MODAL Details Sale -->
+    <div class="modal fade" id="myModelDet" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"><b><i class="fas fa-shopping-cart"></i>Product Details Query</b></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h1 id="cliente" style="font-size: 25px;"></h1>
+                    <table class="table table-bordered" id="tblDet">
+                        <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Subtotal</th>
+                        </tr>
+                        </thead>
+                        <tbody id="values">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+  //create table with 
+  document.addEventListener("DOMContentLoaded", ()=> {
+  let table = document.getElementById("data");
+  let dataTable = new DataTable(table);
+  });
+  const tbody=document.getElementById("values")
+  const openModal=document.querySelectorAll(".openModal")
+  const myModal=document.getElementById("myModelDet")
+  const modalClose=document.querySelector(".close")  
+
+  openModal.forEach(btn=>{
+    btn.addEventListener("click",()=>{
+    const cli=document.getElementById("cliente")
+    const saleId=btn.getAttribute("data-id");
+    //function to create rows in the table with the id="values"
+    const row=(data)=>{
+      cli.textContent=`Detalles del cliente:${data[0].cliente}`
+      for (let i=0;i<data.length;i++){
+        const tr=document.createElement('tr')
+        const name=document.createElement('td')
+        const category=document.createElement('td')
+        const price=document.createElement('td')
+        const cantidad=document.createElement('td')
+        const subTotal=document.createElement('td')
+        name.textContent=data[i].name
+        category.textContent=data[i].category
+        price.textContent=data[i].price
+        cantidad.textContent=data[i].cantidad
+        subTotal.textContent=data[i].subTotal
+        tr.appendChild(name)
+        tr.appendChild(category)
+        tr.appendChild(price)
+        tr.appendChild(cantidad)
+        tr.appendChild(subTotal)
+        tbody.appendChild(tr)
+      }
+    }
+    //add a class show 
+    myModal.classList.add('show');
+		//create a function to make a query and get the data
+		async function getSaleData(saleId) {
+			const response = await fetch(`/sale/get_id/?sale_id=${saleId}`);
+			const data = await response.json();
+			return data;
+		}
+
+    async function fetchData() {
+    try {
+      const saleData = await getSaleData(saleId);
+      // Imprime los datos de la venta en la consola
+      console.log(saleData);
+      // called function to create row to table with id tblDet	
+      row(saleData);
+      // Inicializa la tabla DataTables después de poblar los datos
+      let table2 = document.getElementById("tblDet");
+      let dataTable2 = new DataTable(table2);
+    }catch (error) {
+        console.error("Error al obtener los datos de la venta:", error);
+      }
+    }
+    fetchData();
+    //open the modal
+    myModal.style.display = 'block';
+    })
+  })
+  modalClose.addEventListener('click',(e)=>{
+    tbody.innerHTML=""
+    myModal.style.display="none"
+  })
+</script>
+{% endblock %}

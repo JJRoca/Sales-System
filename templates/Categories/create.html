@@ -1,0 +1,56 @@
+{% extends 'body.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block div %}
+<div class="col-sm-6">
+    <ol class="breadcrumb float-sm-right">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'categories:listaCategories' %}">Categories</a></li>
+    </ol>
+</div>
+{% endblock %}
+{% block content %}
+<form action="" method="post" enctype="multipart/form-data" id="form">
+    {% csrf_token %}
+    <div class="card card-default">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-plus"></i>
+               {{ title }}
+            </h3>
+        </div>
+
+        <div class="card-body">
+            {% if form.errors %}     
+                <div class="alert alert-danger alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <h5><i class="icon fas fa-ban"></i> Alert!</h5>
+                {{form.errors}}
+                </div>
+            {% endif %}
+            <div class="form-group">
+                <label for="name">{{form.name.label}}:</label>
+                {{form.name}}
+            </div>
+            <div class="form-group">
+                <label for="desc">{{form.desc.label}}:</label>
+                {{form.desc}}
+            </div>
+        </div>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-primary btn-flat" id="btn-registro">
+                <i class="fas fa-save"></i> Save
+            </button>
+        </div>           
+    </div>
+    <!-- input to get the url from js  -->
+    <input type="hidden" id="category-create-url" data-url="{% url 'categories:category_create' %}">
+    <input type="hidden" id="category-list" data-url="{% url 'categories:listaCategories' %}">
+
+</form>
+
+{% endblock %}
+
+{% block javascript %}
+    <script src="{% static 'js/Categories/create.js' %}"></script>   
+{% endblock %}

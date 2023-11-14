@@ -1,0 +1,94 @@
+{% extends 'body.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<form action="" method="post" id="my-form" >
+    {% csrf_token %}
+    <div class="card card-default">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-edit"></i>
+               {{ title }}
+            </h3>
+        </div>
+
+        <div class="card-body">
+            <div class="form-group">
+                <label for="name">{{form.name.label}}:</label>
+                {{form.name}}
+            </div>
+            <div class="form-group">
+                <label for="desc">{{form.desc.label}}:</label>
+                {{form.desc}}
+            </div>
+        </div>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-primary btn-flat" id="btn-save">
+                <i class="fas fa-save"></i> Save
+            </button>
+            <a href="{% url 'categories:listaCategories' %}" class="btn btn-danger">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        // Get the CSRF token from the form
+        const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+        let name=document.getElementById('name');
+        let desc=document.getElementById('desc');
+        const button=document.getElementById("btn-save");
+        button.addEventListener("click",(e)=>{
+            e.preventDefault();
+            
+            //validation if fields are empty
+            if (name.value === "") {
+                alert("The name field can`t be empty");
+                return;
+            }
+
+            Swal.fire({
+                title: "¿Are you sure?",
+                text: "¿Do you want update this data ?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Yes, update",
+                cancelButtonText: "No",
+            })
+            .then(result=>{
+                const formData=new FormData()
+                formData.append('name',name.value);
+                formData.append('desc',desc.value);
+                if (result.isConfirmed){
+                    const url = "{% url 'categories:category_update' pk=category.pk %}"; // Reemplaza con la URL correcta
+                    console.log(url)
+                    fetch(url,{
+                        method:'POST',
+                        body:formData,
+                        headers: {
+                        'X-CSRFToken': csrfToken, // Include the csrf_token in the header
+                        }
+                    }).then(response => response.json())
+                    .then(data=>{
+                        console.log(data)          
+                        if (data.success) {
+                            // the operation was successful you can show a success messsage 
+                            console.log(data.message);
+                            window.location.href="{% url 'categories:listaCategories' %}"
+                         } else {
+                            //there was errors in the form, you can show error messages
+                            console.log(data.errors);
+                        }
+                    }).catch(error=>{
+                        console.log("Error")
+                    })
+                }
+            })
+        })
+    </script>
+{% endblock %}
+    
