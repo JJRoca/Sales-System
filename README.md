@@ -1,17 +1,18 @@
 # Sales-System
-E-commerce-Django-NextJS
-1. Backend ( Django Python )
-This project build with Django framework with Django Rest Framework APIs consumed in NextJS Frontend Framework.
-Packages
+Sales System with Django and Vanilla JavaScript 
+Backend ( Django Python )
+This project build with Django framework
+
 Django => Django web framework
-Django Allauth => Allow us to login with multiple accounts
-Django Cors Headers => API Security for frontend application.
-Django Rest Framework => Providing Rest APIs.
+
 Getting Started
 First, create your virtual-environment for your local development server:
 python -m venv venv
 Move to your virtual environment
+Linux
 source venv/Script/activate
+Windows
+.\env\Scripts\activate
 Install python packages
 pip install -r requirements.txt
 Run Migrations
