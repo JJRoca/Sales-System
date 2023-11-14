@@ -12,5 +12,8 @@ urlpatterns = [
     #Generate PDF
     path('pdf/<int:id>/',views.generate_pdf,name='pdf'),
 
-    path('sale/reports',views.GenerateReportListView.as_view(),name='reports')
+    path('sale/reports',views.GenerateReportListView.as_view(),name='reports'),
+
+    #dashboard
+    path('dashboard/',views.dashboard,name='dashboard')
 ]

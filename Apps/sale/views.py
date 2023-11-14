@@ -148,3 +148,7 @@ class GenerateReportListView(ListView):
         context=super().get_context_data(**kwargs)       
         context['title']="Sales Report"
         return context
+
+#DASHBOARD
+def dashboard(request):
+    return render(request,'dashboard.html')        
