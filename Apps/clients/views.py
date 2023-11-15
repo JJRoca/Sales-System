@@ -15,14 +15,10 @@ class ClientListView(ListView):
     model = Client
     template_name = "Clients/list.html"
     context_object_name='cli'
-    http_method_names=["get","post"]
-    # def get_context_data(self, **kwargs):
-    #     context=super().get_context_data(**kwargs) 
-    #     context["prueba"]="new"
-    #     context["form"]=self.request.POST
-    #     print("contenido",context)
-    #     return context
-    
+    def get_context_data(self,**kwargs):
+        context=super().get_context_data(**kwargs)
+        context["title"]="List of clients"
+        return context
 #create a new client
 
 class ClientCreateView(CreateView):

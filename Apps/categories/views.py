@@ -144,7 +144,10 @@ class ProductUpdateView(UpdateView):
     template_name = "Products/update.html"
     form_class=ProductForm
     success_url=reverse_lazy('categories:product_list')
-    
+    def get_context_data(self,**kwargs):
+        context=super().get_context_data(**kwargs)
+        context["title"]="Updated product"
+        return context
 #class-based-views to delete a product
 class ProductDeleteView(DeleteView):
     model = Product

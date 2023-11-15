@@ -5,7 +5,7 @@ from django.shortcuts import render,get_object_or_404
 from django.db import transaction
 from Apps.categories.models import Product
 from django.http import HttpRequest, HttpResponse, JsonResponse,HttpResponseRedirect
-from django.views.generic import CreateView,ListView
+from django.views.generic import CreateView,ListView,TemplateView
 from .forms import SaleForm
 from .models import Sale,DetSale
 from Apps.categories.models import Product
@@ -13,13 +13,23 @@ from Apps.clients.models import Client
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.urls import reverse_lazy
+from datetime import datetime
+from django.db.models import Sum
+from django.db.models.functions import Coalesce
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
-class SaleListView(ListView):
+class SaleListView(LoginRequiredMixin,ListView):
     model = Sale
     context_object_name='sale'
     template_name = "Sale/list.html"
+    login_url='users:login'
+    def get_context_data(self,**kwargs):
+        context=super().get_context_data(**kwargs)
+        context["title"]="Sales list"
+        return context
 #request get for details sale of client
 def get_sale(request):
     if request.method=='GET':
@@ -39,11 +49,12 @@ def get_sale(request):
             lista.append(dic)
         return JsonResponse(lista,safe=False)    
 
-class SaleCreateView(CreateView):
+class SaleCreateView(LoginRequiredMixin,CreateView):
     model = Sale
     form_class=SaleForm
     template_name = "Sale/create.html"
     success_url=reverse_lazy("sale:sale_list")
+    login_url='users:login'
     # Function to calculate subtotal, IVA, and total for saving in the Sale model
     def calculate_subtotal_iva_total(self,produc,products_cant,iva):
         sub_total_sale=sum([prod.price*int(prod_cant) for prod,prod_cant in zip(produc,products_cant)])
@@ -93,6 +104,7 @@ class SaleCreateView(CreateView):
 
 
 #function for filter products 
+@login_required(login_url='users:login')
 def search_products(request):
     try:    
         name_product=request.GET.get('filter')
@@ -111,7 +123,7 @@ def search_products(request):
         # handle other general exceptions here
         print("an error ocurred:", str(e))
         return JsonResponse({"error": "Request error"}, status=500)
-    
+@login_required(login_url='users:login')   
 def visualizar(request):
     name=request.GET.get("name")
     name_value=Product.objects.get(name=name)
@@ -140,15 +152,37 @@ def generate_pdf(request,id):
         
 #View to generate sales reports
 
-class GenerateReportListView(ListView):
+class GenerateReportListView(LoginRequiredMixin,ListView):
     model = Sale
     template_name = 'Sale/report.html'
     context_object_name='sa'
+    login_url='users:login'
     def get_context_data(self, **kwargs):
         context=super().get_context_data(**kwargs)       
         context['title']="Sales Report"
         return context
 
 #DASHBOARD
-def dashboard(request):
-    return render(request,'dashboard.html')        
+class Dasboard(LoginRequiredMixin,TemplateView):
+    template_name = "dashboard.html"
+    login_url='users:login'
+    #create a function to filter year,month
+    def get_graph_sales_year_month(self):
+        data = []
+        try:
+            year=datetime.now().year
+            for m in range(1, 13):
+                print(year,m)
+                total=Sale.objects.filter(date_joined__year=year,date_joined__month=m).aggregate(Sum("total"))
+                total_value = total["total__sum"] if total["total__sum"] is not None else 0
+                print("----",total_value)
+
+                data.append(float(total_value))
+        except Exception as e: 
+            print("error",e)
+        return data
+    def  get_context_data(self,**kwargs):
+        context=super().get_context_data(**kwargs)
+        context["year"]=self.get_graph_sales_year_month()
+        return context        
+    

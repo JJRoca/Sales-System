@@ -15,5 +15,5 @@ urlpatterns = [
     path('sale/reports',views.GenerateReportListView.as_view(),name='reports'),
 
     #dashboard
-    path('dashboard/',views.dashboard,name='dashboard')
+    path('dashboard/',views.Dasboard.as_view(),name='dashboard')
 ]

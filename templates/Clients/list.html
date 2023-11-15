@@ -28,7 +28,7 @@
         <div class="card-header">
             <h3 class="card-title">
                 <i class="fas fa-search"></i>
-                {{ prueba }}
+                {{ title }}
             </h3>
         </div>
         <div class="card-body">
@@ -80,28 +80,35 @@
 
 
 {% block javascript %}
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script> -->
 
 <script>
+let modal; 
+
 function abrirModal() {
     const modalContainer = document.getElementById("modalContainer");
-
     // Realizar una solicitud fetch para cargar el contenido del modal
     fetch("/clients/create/")
         .then(response => response.text())
         .then(data => {
             modalContainer.innerHTML = data;
-
-            // Mostrar el modal de Bootstrap utilizando JavaScript nativo
-            const modal = document.getElementById("myModal");
-            modal.classList.add("show");
-            modal.style.display = "block";
+            console.log(modalContainer)
+            //Show the Boostrap modal using vanilla JavaScript
+            modal = new bootstrap.Modal(document.getElementById("myModal"));
+            modal.show();
         })
         .catch(error => {
             console.error(error);
         });
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+    const btnCloseModal = document.querySelector(".close");
+    btnCloseModal.addEventListener("click", () => {
+        //Clear to the table
+        // tableBody.innerHTML = "";
+        modal.hide();  // Utiliza el método hide() para cerrar el modal
+    });
+});
 </script>
-
 {% endblock %}
