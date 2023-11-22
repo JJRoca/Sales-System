@@ -172,17 +172,37 @@ class Dasboard(LoginRequiredMixin,TemplateView):
         try:
             year=datetime.now().year
             for m in range(1, 13):
-                print(year,m)
+                # print(year,m)
                 total=Sale.objects.filter(date_joined__year=year,date_joined__month=m).aggregate(Sum("total"))
                 total_value = total["total__sum"] if total["total__sum"] is not None else 0
-                print("----",total_value)
-
+                # print("----",total_value)
                 data.append(float(total_value))
         except Exception as e: 
             print("error",e)
+        return data       
+    #function to show a graph of product by month  
+    def get_graph_products_year_month(self):
+        data=[]
+        year=datetime.now().year
+        month=datetime.now().month
+        try:
+            for p in Product.objects.all():
+                print(p.id)
+                total=DetSale.objects.filter(sale__date_joined__year=year,sale__date_joined__month=month,prod__id=p.id).aggregate(Sum('subtotal'))
+                print(total)
+                total_values=total['subtotal__sum'] if total['subtotal__sum'] is not None else 0
+                print("total-------",total_values)
+                if total_values>0:
+                    data.append({
+                        'name':p.name,
+                        'y':float(total_values)
+                    })
+        except Exception as e:
+            pass    
         return data
-    def  get_context_data(self,**kwargs):
+    def get_context_data(self,**kwargs):
         context=super().get_context_data(**kwargs)
         context["year"]=self.get_graph_sales_year_month()
-        return context        
-    
+        product_year_month=self.get_graph_products_year_month()
+        context["chart_data"]=product_year_month
+        return context 

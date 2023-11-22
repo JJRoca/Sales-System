@@ -64,16 +64,16 @@
                 formData.append('name',name.value);
                 formData.append('desc',desc.value);
                 if (result.isConfirmed){
-                    const url = "{% url 'categories:category_update' pk=category.pk %}"; // Reemplaza con la URL correcta
+                    const url = "{% url 'categories:category_update' pk=category.pk %}"; 
                     console.log(url)
                     fetch(url,{
                         method:'POST',
                         body:formData,
                         headers: {
-                        'X-CSRFToken': csrfToken, // Include the csrf_token in the header
+                        'X-CSRFToken': csrfToken, 
                         }
                     }).then(response => response.json())
-                    .then(data=>{
+                      .then(data=>{
                         console.log(data)          
                         if (data.success) {
                             // the operation was successful you can show a success messsage 

@@ -1,0 +1,90 @@
+{% extends 'body.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'lib/DataTables/datatables.css' %}" />
+<script src="{% static 'lib/DataTables/datatables.js' %}"></script>
+{% endblock %}
+
+{% block div %}
+<div class="col-sm-6">
+    <ol class="breadcrumb float-sm-right">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item"><a href="">Users</a></li>
+    </ol>
+</div>
+{% endblock %}
+
+
+{% block content %}
+    <div class="card card-default">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-search"></i>
+                {{ title }}
+            </h3>
+        </div>
+        <div class="card-body">
+            <table class="table" id="data">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 10%;">Nro</th>
+                        <th scope="col" style="width: 30%;">Name</th>
+                        <th scope="col" style="width: 20%;">Last Name</th>
+                        <th scope="col" style="width: 10%;">Username</th>
+                        <th scope="col" style="width: 15;">Date</th>
+                        <th scope="col" style="width: 15;">Options</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in user %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ u.first_name }}</td>
+                        <td>{{ u.last_name }}</td>
+                        <td>{{ u.username}}</td>
+                        <td>{{ u.date_joined|date}}</td>
+                        <td>
+                            <a href="{% url 'users:user_update' u.pk %}" class="btn btn-warning btn-xs btn-flat">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="" class="btn btn-danger btn-xs btn-flat">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- <div class="notification" style="background-color: black; width: 500px; border-radius: 25px;">
+            <div class="header">
+                <h3>Image sent</h3>
+            </div>
+            <div class="body">
+                <p>The image has been sent successfully.</p>
+            </div>
+            <div class="actions">
+                <button class="ok">OK</button>
+                <button class="cancel">Cancel</button>
+            </div>
+        </div>
+         -->
+        <div class="card-footer">
+            <a class="btn btn-primary btn-flat" id="btn-registro" href="{% url 'users:user_create' %}">
+                <i class="fas fa-plus"></i>New Register </a>    
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script type="application/javascript">
+            //create table with 
+            document.addEventListener("DOMContentLoaded", ()=> {
+            let table = document.getElementById("data");
+            let dataTable = new DataTable(table);
+        });
+
+    </script>
+{% endblock %}
